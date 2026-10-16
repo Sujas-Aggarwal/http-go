@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-
-	"github.com/Sujas-Aggarwal/http-go/internal/errorhandling"
 )
 
 func main() {
@@ -38,13 +36,22 @@ func handleConnection(conn net.Conn) {
 	// now we also need to accept if what the connection might be sending us
 	// let's read in chunk sizes and then stitch them together and print them then
 	// for now, lets just read 10 chars, i.e 80 bytes, I wanna see how it reacts.
-	buffer := make([]byte, 1024)
-	for {
-		n, err := conn.Read(buffer)
-		if errorhandling.HandleIoError(err) {
-			return
-		}
-		raw_data := buffer[:n] // we will only read till we recieved
-		fmt.Println("This is the data we recieved\n", raw_data)
+	// buffer := make([]byte, 1024)
+	// for {
+	// 	n, err := conn.Read(buffer)
+	// 	if errorhandling.HandleIoError(err) {
+	// 		return
+	// 	}
+	// 	raw_data := buffer[:n] // we will only read till we recieved
+	// 	fmt.Println("This is the data we recieved\n", raw_data)
+	// }
+	// lets try sending some data instead of reading now
+	text_to_send := "lol yo got this from my message, can't beleive it"
+	bytes_to_send := []byte(text_to_send)
+	n, err := conn.Write(bytes_to_send)
+	if err != nil {
+		fmt.Println("Error Sending Message", err)
+	} else {
+		fmt.Println("Send Message:\n", text_to_send[:n])
 	}
 }
