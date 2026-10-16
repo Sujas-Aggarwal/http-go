@@ -1,11 +1,11 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"io"
 	"log"
 	"net"
+
+	"github.com/Sujas-Aggarwal/http-go/internal/errorhandling"
 )
 
 func main() {
@@ -41,23 +41,7 @@ func handleConnection(conn net.Conn) {
 	buffer := make([]byte, 1024)
 	for {
 		n, err := conn.Read(buffer)
-		if err != nil {
-			// 1. Check for a genuine, clean close
-			if errors.Is(err, io.EOF) {
-				fmt.Println("Client disconnected cleanly (EOF). Closing connection loop.")
-				return // Exit the loop safely without crashing the server
-			}
-
-			// 2. Check for an abrupt client disconnect (e.g., app crashed, network cut)
-			// On Linux/macOS this is usually "connection reset by peer"
-			var opErr *net.OpError
-			if errors.As(err, &opErr) {
-				log.Printf("Network/OS error occurred: %v\n", opErr.Err)
-				return
-			}
-
-			// 3. Handle any other generic reading errors
-			log.Printf("Unexpected error reading connection: %v\n", err)
+		if errorhandling.HandleIoError(err) {
 			return
 		}
 		raw_data := buffer[:n] // we will only read till we recieved
