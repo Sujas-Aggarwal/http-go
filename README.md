@@ -19,3 +19,8 @@ ever format we specified in the content header type, maybe 8 bit encoded strings
 or ascii or some weird ass format, doesn't matter tbh, depends on the end consumer.
 
 since http1.0 works on tcp, we will also listen on tcp (i am not implementing tcp here)
+
+# Issue 1 -
+how do i know when to stop waiting for data and instead respond back?
+well easy, for GET requests sent by browser, the header always ends with \r\n\r\n
+we need to use that

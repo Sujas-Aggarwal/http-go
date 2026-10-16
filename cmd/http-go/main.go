@@ -40,13 +40,23 @@ func handleConnection(conn net.Conn) {
 	// let's read in chunk sizes and then stitch them together and print them then
 	// for now, lets just read 10 chars, i.e 80 bytes, I wanna see how it reacts.
 	buffer := make([]byte, 1024)
+	request_headers := ""
+	total_size := 0
 	for {
 		n, err := conn.Read(buffer)
 		if errorhandling.HandleIoError(err) {
 			return
 		}
 		raw_data := buffer[:n] // we will only read till we recieved
+		request_headers += string(raw_data)
+		total_size += n
 		fmt.Println("This is the data we recieved\n", string(raw_data))
+		// we need to check if it ends with \r\n\r\n, that is important
+
+		if request_headers[total_size-4:total_size] == "\r\n\r\n" {
+			fmt.Println("Request Header Ended, Got Bytes -", []byte(request_headers[total_size-4:total_size]))
+			break
+		}
 	}
 	// lets try sending some data instead of reading now
 	text_to_send := tcphandler.Serve()
