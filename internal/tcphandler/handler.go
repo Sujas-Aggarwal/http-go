@@ -26,3 +26,7 @@ func ServeBinary() string {
 	content_length := len(file)
 	return fmt.Sprintf("HTTP/1.0 200 OK\nContent-Type: application/octet-stream\nContent-Length: %d\n\n%s", content_length, file)
 }
+
+func ServeError() string {
+	return "HTTP/1.0 500 Internal Server Error\nContent-Type: application/json\nContent-Length: 35\n\n{'message':'Internal Server Error'}"
+}
