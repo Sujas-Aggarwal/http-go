@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	"github.com/Sujas-Aggarwal/http-go/internal/tcphandler"
 )
 
 func main() {
@@ -46,7 +48,7 @@ func handleConnection(conn net.Conn) {
 	// 	fmt.Println("This is the data we recieved\n", raw_data)
 	// }
 	// lets try sending some data instead of reading now
-	text_to_send := "lol yo got this from my message, can't beleive it"
+	text_to_send := tcphandler.Serve()
 	bytes_to_send := []byte(text_to_send)
 	n, err := conn.Write(bytes_to_send)
 	if err != nil {
