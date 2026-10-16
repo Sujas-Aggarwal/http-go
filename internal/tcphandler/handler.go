@@ -15,5 +15,14 @@ func ServeImage() string {
 		fmt.Println("Error Reading File")
 	}
 	content_length := len(file)
-	return fmt.Sprintf("HTTP/1.0 200 OK\nAccept-Ranges: bytes\nContent-Type: image/jpeg\nContent-Length: %d\n\n%s", content_length, file)
+	return fmt.Sprintf("HTTP/1.0 200 OK\nContent-Type: image/jpeg\nContent-Length: %d\n\n%s", content_length, file)
+}
+
+func ServeBinary() string {
+	file, err := os.ReadFile("/Users/sujas/Desktop/Tech/Personal/http-go/public/http-go")
+	if err != nil {
+		fmt.Println("Error Reading File")
+	}
+	content_length := len(file)
+	return fmt.Sprintf("HTTP/1.0 200 OK\nContent-Type: application/octet-stream\nContent-Length: %d\n\n%s", content_length, file)
 }
