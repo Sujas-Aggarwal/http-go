@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/Sujas-Aggarwal/http-go/internal/errorhandling"
+	"github.com/Sujas-Aggarwal/http-go/internal/errorhandler"
 	"github.com/Sujas-Aggarwal/http-go/internal/tcphandler"
 )
 
@@ -44,7 +44,7 @@ func handleConnection(conn net.Conn) {
 	total_size := 0
 	for {
 		n, err := conn.Read(buffer)
-		if errorhandling.HandleIoError(err) {
+		if errorhandler.HandleIoError(err) {
 			return
 		}
 		raw_data := buffer[:n] // we will only read till we recieved

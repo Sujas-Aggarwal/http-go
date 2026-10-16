@@ -30,3 +30,12 @@ we need to use that
 Now plan,
 let's try to send some files over tcp/http instead of just plain text
 - send binary files, http files, images and stuff.
+
+
+plan -
+1. basically we need to expose functions using which a person can start a listener
+2. can register routes and allow particular methods
+3. can send back some response depending on the method. (not adding the request data rn, too tough i think)
+
+for now, lets just work on http/1.0 and make 3 methods - GET POST and HEAD
+(head is just get without the actual body, just the size info)
