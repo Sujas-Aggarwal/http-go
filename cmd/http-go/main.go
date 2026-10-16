@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net"
 )
@@ -20,7 +22,7 @@ func main() {
 	for {
 		conn, err := socket.Accept()
 		if err != nil {
-			log.Fatalln("Error Accepting Connection", err)
+			fmt.Println("Error Accepting Connection", err)
 		}
 		go handleConnection(conn)
 	}
@@ -36,7 +38,29 @@ func handleConnection(conn net.Conn) {
 	// now we also need to accept if what the connection might be sending us
 	// let's read in chunk sizes and then stitch them together and print them then
 	// for now, lets just read 10 chars, i.e 80 bytes, I wanna see how it reacts.
-	buffer := make([]byte, 80)
-	conn.Read(buffer)
-	fmt.Println(buffer)
+	buffer := make([]byte, 1024)
+	for {
+		n, err := conn.Read(buffer)
+		if err != nil {
+			// 1. Check for a genuine, clean close
+			if errors.Is(err, io.EOF) {
+				fmt.Println("Client disconnected cleanly (EOF). Closing connection loop.")
+				return // Exit the loop safely without crashing the server
+			}
+
+			// 2. Check for an abrupt client disconnect (e.g., app crashed, network cut)
+			// On Linux/macOS this is usually "connection reset by peer"
+			var opErr *net.OpError
+			if errors.As(err, &opErr) {
+				log.Printf("Network/OS error occurred: %v\n", opErr.Err)
+				return
+			}
+
+			// 3. Handle any other generic reading errors
+			log.Printf("Unexpected error reading connection: %v\n", err)
+			return
+		}
+		raw_data := buffer[:n] // we will only read till we recieved
+		fmt.Println("This is the data we recieved\n", raw_data)
+	}
 }
