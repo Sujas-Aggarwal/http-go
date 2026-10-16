@@ -22,5 +22,11 @@ since http1.0 works on tcp, we will also listen on tcp (i am not implementing tc
 
 # Issue 1 -
 how do i know when to stop waiting for data and instead respond back?
+## Solutoion - 
 well easy, for GET requests sent by browser, the header always ends with \r\n\r\n
 we need to use that
+
+
+Now plan,
+let's try to send some files over tcp/http instead of just plain text
+- send binary files, http files, images and stuff.

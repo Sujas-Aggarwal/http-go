@@ -59,7 +59,7 @@ func handleConnection(conn net.Conn) {
 		}
 	}
 	// lets try sending some data instead of reading now
-	text_to_send := tcphandler.Serve()
+	text_to_send := tcphandler.ServeImage()
 	bytes_to_send := []byte(text_to_send)
 	n, err := conn.Write(bytes_to_send)
 	if err != nil {
