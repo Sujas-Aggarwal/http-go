@@ -58,14 +58,16 @@ func BodyParser(conn net.Conn, remBody []byte, neededBytes int) []byte {
 	}
 	// if not then we can simply read more buffer and put that into remaining body byte and return that
 	buffer := make([]byte, 1024)
-	for neededBytes != 0 {
+	remaining := neededBytes - len(remBody)
+	for remaining > 0 {
 		n, err := conn.Read(buffer)
 		if err != nil {
 			fmt.Println("ERROR: Reading Body of the Request -", err)
+			return remBody
 		}
-		req := min(neededBytes, n)
+		req := min(remaining, n)
 		remBody = append(remBody, buffer[:req]...)
-		neededBytes -= req
+		remaining -= req
 	}
 	return remBody
 }

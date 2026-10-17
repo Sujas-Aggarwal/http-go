@@ -18,7 +18,17 @@ func StartListener(port string) net.Listener {
 	return listener
 }
 
+type RequestHandler func(helper.RequestHeader, []byte, net.Conn)
+
 func HandleConnection(conn net.Conn) {
+	handleConnection(conn, nil)
+}
+
+func HandleConnectionWithHandler(conn net.Conn, handler RequestHandler) {
+	handleConnection(conn, handler)
+}
+
+func handleConnection(conn net.Conn, handler RequestHandler) {
 	defer helper.CloseConnection(conn)
 	fmt.Println("INFO: Got New Connection -", conn)
 
@@ -45,18 +55,22 @@ func HandleConnection(conn net.Conn) {
 			headersStr := string(headerBytes)
 			requestHeader := helper.Parser(headersStr)
 			remainingBodyLength := requestHeader.ContentLength
+			var fullBody []byte
 
 			if remainingBodyLength > 0 {
 				// Calculate how much more body data we still need to read
 				neededBytes := remainingBodyLength
 
 				// Combine what we already have with a fresh read loop for the rest
-				fullBody := helper.BodyParser(conn, trailingBodyBytes, neededBytes)
+				fullBody = helper.BodyParser(conn, trailingBodyBytes, neededBytes)
 
 				// Process your body here
 				fmt.Println("Headers:\n", requestHeader)
 				fmt.Println("Body", string(fullBody))
 				// now we need to process the Request and send the response back.
+			}
+			if handler != nil {
+				handler(requestHeader, fullBody, conn)
 			}
 
 			// Break the loop since the request ingestion is done

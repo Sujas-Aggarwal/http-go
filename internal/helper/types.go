@@ -1,5 +1,7 @@
 package helper
 
+import "net"
+
 type RequestHeader struct {
 	Method        string
 	Route         string
@@ -14,4 +16,9 @@ type RequestHeader struct {
 type Request struct {
 	headers RequestHeader
 	body    string
+}
+
+type Slink struct {
+	listener net.Listener
+	port     int
 }

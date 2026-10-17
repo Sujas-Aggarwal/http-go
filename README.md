@@ -32,10 +32,39 @@ let's try to send some files over tcp/http instead of just plain text
 - send binary files, http files, images and stuff.
 
 
-plan -
-1. basically we need to expose functions using which a person can start a listener
-2. can register routes and allow particular methods
-3. can send back some response depending on the method. (not adding the request data rn, too tough i think)
+i am thinking of exposing a very similar fashion of api as nodejs or somethign
+- create a app, define a port you want to listen
+- on that app, register routes and register middleware if you want
+- then add a function that you want to execute on recieving that route and method
+- in that funciton, you will have access to 2 vars, request and response
+- the request one will provide you the info of the request, particularly the headers
+- and the body will provide you with the body of the request
 
-for now, lets just work on http/1.0 and make 3 methods - GET POST and HEAD
-(head is just get without the actual body, just the size info)
+## Try the library
+
+Import `github.com/Sujas-Aggarwal/http-go` from another Go module:
+
+```go
+package main
+
+import (
+	"log"
+
+	httpgo "github.com/Sujas-Aggarwal/http-go"
+)
+
+func main() {
+	app := httpgo.New(":8000")
+	app.Get("/", func(req *httpgo.Request, res *httpgo.Response) {
+		log.Println(req.Headers.Method, req.Headers.Route, req.Headers.Host)
+		_ = res.Send(200, "Hello from http-go!")
+	})
+	app.Post("/echo", func(req *httpgo.Request, res *httpgo.Response) {
+		_ = res.Send(200, string(req.Body))
+	})
+	log.Fatal(app.Listen())
+}
+```
+
+You can also run `go run ./cmd/api-server` in this repository. Try
+`curl localhost:8000/` or `curl -d hello localhost:8000/echo`.
